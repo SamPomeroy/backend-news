@@ -1,6 +1,7 @@
 const User = require('../model/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const Article = require('../model/Article')
 
 const {
     isEmpty,
@@ -58,7 +59,7 @@ async function signin(req, res, next){
                         expiresIn: '1d'
                     }
                 )
-                res.json({message: 'Logged in', payload: jwtToken})
+                res.json({message: 'Logged in', payload: jwtToken, userId: foundUser._id})
             }
         }
     } catch (error) {
@@ -94,9 +95,76 @@ async function updateUser(req, res){
     }
 }
 
+async function addFavorite(req,res){
+    const userId = req.params.userId
+    const { author, title, description, url, urlToImage, publishedAt, content} = req.body
+    try {
+        const user = await User.findById({_id: userId});
+        if(!user){
+            return res.status(500).json({message: 'user not found'})
+        }
+        let article = await Article.findOne({url});
+        if(!article){
+            article = new Article({
+                author,
+                title,
+                description,
+                url,
+                urlToImage,
+                publishedAt,
+                content
+            })
+            await article.save()
+        }
+        if (user.favorites.includes(article._id)){
+            return res.status(500).json({message: 'article already saved to favorites'})
+        }
+        user.favorites.push(article._id);
+        await user.save();
+        res.status(200).json({message: 'article added to favorites', article})
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+async function addToSaved(req,res){
+    const userId = req.params.userId
+    const { author, title, description, url, urlToImage, publishedAt, content} = req.body
+    try {
+        const user = await User.findById({_id: userId});
+        if(!user){
+            return res.status(500).json({message: 'user not found'})
+        }
+        let article = await Article.findOne({url});
+        if(!article){
+            article = new Article({
+                author,
+                title,
+                description,
+                url,
+                urlToImage,
+                publishedAt,
+                content
+            })
+            await article.save()
+        }
+        if (user.saved.includes(article._id)){
+            return res.status(500).json({message: 'article already saved to favorites'})
+        }
+        user.saved.push(article._id);
+        await user.save();
+        res.status(200).json({message: 'article saved', article})
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+}
+
 module.exports = {
     signUp,
     signin,
     getUserByID,
-    updateUser
+    updateUser,
+    addFavorite,
+    addToSaved
+
+
 }
