@@ -4,7 +4,7 @@ const{checkIsUndefinedFunc} = require('./helpers/checkIsUndefined')
 const{checkIsEmptyFunc} = require('./helpers/checkIsEmpty')
 const{authMiddlewareFunc} = require('./helpers/authMiddleware')
 
-const {signUp, signin, getUserByID, updateUser, addFavorite, addToSaved} = require('./controller/userController')
+const {signUp, signin, getUserByID, updateUser, addFavorite, addToSaved, deleteById} = require('./controller/userController')
 
 const {checkJwtToken} = require('../utils/jwtMiddleware')
 
@@ -32,5 +32,7 @@ router.post('/sign-up',
  router.get('/get-user-by-id/:id', getUserByID)
 
  router.put('/update-user', updateUser)
+
+ router.delete('/delete', deleteById)
 
 module.exports = router

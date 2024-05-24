@@ -157,14 +157,22 @@ async function addToSaved(req,res){
         res.status(500).json({error: error.message});
     }
 }
-
+async function deleteById(req, res){
+    try {
+        const deletedArticle= await Article.findByIdAndDelete({_id: req.params.id})
+        res.json({message: 'success', payload: deletedArticle})
+    } catch (error) {
+        res.status(500).json({message: 'error', error: error})
+    }
+}
 module.exports = {
     signUp,
     signin,
     getUserByID,
     updateUser,
     addFavorite,
-    addToSaved
+    addToSaved,
+    deleteById
 
 
 }
