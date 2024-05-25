@@ -157,14 +157,69 @@ async function addToSaved(req,res){
         res.status(500).json({error: error.message});
     }
 }
-async function deleteById(req, res){
+async function deleteFavoriteById(req, res){
     try {
-        const deletedArticle= await Article.findByIdAndDelete({_id: req.params.id})
-        res.json({message: 'success', payload: deletedArticle})
+        
+        const user= await User.findById({_id: req.params.user})
+        if(!user){
+            res.status(400).json({message: 'user not found'})
+        }
+        let article= await Article.findOne({_id: req.params.articleId})
+        if(!article){
+            res.status(400).json({message: 'article not found'})
+        }
+        let foundArticle= user.favorites.includes(req.params.articleId)
+        if(!foundArticle){
+            res.status(400).json({message: 'article not found'})
+        }
+        const results= await User.updateOne({_id: req.params.user}, {$pull: {favorites: req.params.articleId}})
+        res.json({message: 'successfully removed from favorites'})
     } catch (error) {
         res.status(500).json({message: 'error', error: error})
     }
 }
+async function deleteSavedById(req, res){
+    try {
+        
+        const user= await User.findById({_id: req.params.user})
+        if(!user){
+            res.status(400).json({message: 'user not found'})
+        }
+        let article= await Article.findOne({_id: req.params.articleId})
+        if(!article){
+            res.status(400).json({message: 'article not found'})
+        }
+        let foundArticle= user.saved.includes(req.params.articleId)
+        if(!foundArticle){
+            res.status(400).json({message: 'article not found'})
+        }
+        const results= await User.updateOne({_id: req.params.user}, {$pull: {saved: req.params.articleId}})
+        res.json({message: 'successfully removed from saved'})
+    } catch (error) {
+        res.status(500).json({message: 'error', error: error})
+    }
+}
+async function getUserInfo(req, res){
+    try {
+        const user= await User.findById({_id: req.params.user})
+        .populate({
+            path: 'favorites',
+            model: "Article"
+        })
+        .populate({
+            path: 'saved',
+            model: 'Article'
+        })
+        if(!user){
+            res.status(400).json({message: 'user not found'})
+        }
+        res.json(user)
+    } catch (error) {
+        res.status(500).json({message: 'error', error: error})
+    }
+}
+
+
 module.exports = {
     signUp,
     signin,
@@ -172,7 +227,9 @@ module.exports = {
     updateUser,
     addFavorite,
     addToSaved,
-    deleteById
+    deleteFavoriteById,
+    deleteSavedById,
+    getUserInfo
 
 
 }
