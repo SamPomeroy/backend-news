@@ -4,7 +4,7 @@ const{checkIsUndefinedFunc} = require('./helpers/checkIsUndefined')
 const{checkIsEmptyFunc} = require('./helpers/checkIsEmpty')
 const{authMiddlewareFunc} = require('./helpers/authMiddleware')
 
-const {signUp, signin, getUserByID, updateUser, addFavorite, addToSaved, deleteFavoriteById, deleteSavedById, getUserInfo} = require('./controller/userController')
+const {signUp, signin, getUserByID, updateUser, addFavorite, addToSaved, getUserInfo, deleteFavoriteById, deleteSavedById} = require('./controller/userController')
 
 const {checkJwtToken} = require('../utils/jwtMiddleware')
 

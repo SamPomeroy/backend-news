@@ -172,8 +172,8 @@ async function deleteFavoriteById(req, res){
         if(!foundArticle){
             res.status(400).json({message: 'article not found'})
         }
-        const results= await User.updateOne({_id: req.params.user}, {$pull: {favorites: req.params.articleId}})
-        res.json({message: 'successfully removed from favorites'})
+        const results= await User.updateOne({_id: req.params.user}, {$pull: {favorites: req.params.articleId}}).populate({path: 'favorites', model: 'Article'})
+        res.json({message: 'successfully removed from favorites', favorites: results.favorites})
     } catch (error) {
         res.status(500).json({message: 'error', error: error})
     }
