@@ -21,12 +21,8 @@ const userSchema = new mongoose.Schema({
     },
     favorites: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Article'
+        ref: 'Book'
     }],
-    saved: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Article'
-    }]
 })
 
 module.exports = mongoose.model('User', userSchema)

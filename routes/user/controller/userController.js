@@ -1,7 +1,7 @@
 const User = require('../model/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const Article = require('../model/Article')
+const Book = require('../model/Book')
 
 const {
     isEmpty,
@@ -103,9 +103,9 @@ async function addFavorite(req,res){
         if(!user){
             return res.status(500).json({message: 'user not found'})
         }
-        let article = await Article.findOne({url});
-        if(!article){
-            article = new Article({
+        let Book = await Book.findOne({url});
+        if(!Book){
+            Book = new Book({
                 author,
                 title,
                 description,
@@ -114,14 +114,14 @@ async function addFavorite(req,res){
                 publishedAt,
                 content
             })
-            await article.save()
+            await Book.save()
         }
-        if (user.favorites.includes(article._id)){
-            return res.status(500).json({message: 'article already saved to favorites'})
+        if (user.favorites.includes(Book._id)){
+            return res.status(500).json({message: 'Book already saved to favorites'})
         }
-        user.favorites.push(article._id);
+        user.favorites.push(Book._id);
         await user.save();
-        res.status(200).json({message: 'article added to favorites', article})
+        res.status(200).json({message: 'Book added to favorites', Book})
     } catch (error) {
         res.status(500).json({error: error.message});
     }
@@ -134,9 +134,9 @@ async function addToSaved(req,res){
         if(!user){
             return res.status(500).json({message: 'user not found'})
         }
-        let article = await Article.findOne({url});
-        if(!article){
-            article = new Article({
+        let Book = await Book.findOne({url});
+        if(!Book){
+            Book = new Book({
                 author,
                 title,
                 description,
@@ -145,14 +145,14 @@ async function addToSaved(req,res){
                 publishedAt,
                 content
             })
-            await article.save()
+            await Book.save()
         }
-        if (user.saved.includes(article._id)){
-            return res.status(500).json({message: 'article already saved to favorites'})
+        if (user.saved.includes(Book._id)){
+            return res.status(500).json({message: 'Book already saved to favorites'})
         }
-        user.saved.push(article._id);
+        user.saved.push(Book._id);
         await user.save();
-        res.status(200).json({message: 'article saved', article})
+        res.status(200).json({message: 'Book saved', Book})
     } catch (error) {
         res.status(500).json({error: error.message});
     }
@@ -164,15 +164,15 @@ async function deleteFavoriteById(req, res){
         if(!user){
             res.status(400).json({message: 'user not found'})
         }
-        let article= await Article.findOne({_id: req.params.articleId})
-        if(!article){
-            res.status(400).json({message: 'article not found'})
+        let Book= await Book.findOne({_id: req.params.BookId})
+        if(!Book){
+            res.status(400).json({message: 'Book not found'})
         }
-        let foundArticle= user.favorites.includes(req.params.articleId)
-        if(!foundArticle){
-            res.status(400).json({message: 'article not found'})
+        let foundBook= user.favorites.includes(req.params.BookId)
+        if(!foundBook){
+            res.status(400).json({message: 'Book not found'})
         }
-        const results= await User.updateOne({_id: req.params.user}, {$pull: {favorites: req.params.articleId}}).populate({path: 'favorites', model: 'Article'})
+        const results= await User.updateOne({_id: req.params.user}, {$pull: {favorites: req.params.BookId}}).populate({path: 'favorites', model: 'Book'})
         res.json({message: 'successfully removed from favorites', favorites: results.favorites})
     } catch (error) {
         res.status(500).json({message: 'error', error: error})
@@ -185,15 +185,15 @@ async function deleteSavedById(req, res){
         if(!user){
             res.status(400).json({message: 'user not found'})
         }
-        let article= await Article.findOne({_id: req.params.articleId})
-        if(!article){
-            res.status(400).json({message: 'article not found'})
+        let Book= await Book.findOne({_id: req.params.BookId})
+        if(!Book){
+            res.status(400).json({message: 'Book not found'})
         }
-        let foundArticle= user.saved.includes(req.params.articleId)
-        if(!foundArticle){
-            res.status(400).json({message: 'article not found'})
+        let foundBook= user.saved.includes(req.params.BookId)
+        if(!foundBook){
+            res.status(400).json({message: 'Book not found'})
         }
-        const results= await User.updateOne({_id: req.params.user}, {$pull: {saved: req.params.articleId}})
+        const results= await User.updateOne({_id: req.params.user}, {$pull: {saved: req.params.BookId}})
         res.json({message: 'successfully removed from saved'})
     } catch (error) {
         res.status(500).json({message: 'error', error: error})
@@ -204,11 +204,11 @@ async function getUserInfo(req, res){
         const user= await User.findById({_id: req.params.user})
         .populate({
             path: 'favorites',
-            model: "Article"
+            model: "Book"
         })
         .populate({
             path: 'saved',
-            model: 'Article'
+            model: 'Book'
         })
         if(!user){
             res.status(400).json({message: 'user not found'})
